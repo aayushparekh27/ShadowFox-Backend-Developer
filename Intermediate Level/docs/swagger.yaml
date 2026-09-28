@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: E-Commerce & Inventory Management API
+  description: Intermediate Level REST API with JWT Auth, Role-Based Access Control (Admin/Customer), Product & Inventory Management, Cart Flow, and Atomic Order Checkout.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3002
+    description: Local Development Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /health:
+    get:
+      summary: Health Check Endpoint
+      responses:
+        '200':
+          description: API is operational
+  /api/auth/register:
+    post:
+      summary: Register new customer or admin user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string, example: "Jane Doe" }
+                email: { type: string, example: "jane@example.com" }
+                password: { type: string, example: "Secret123!" }
+                role: { type: string, enum: [CUSTOMER, ADMIN], example: "CUSTOMER" }
+      responses:
+        '201': { description: "User registered successfully" }
+        '409': { description: "Email already registered" }
+  /api/auth/login:
+    post:
+      summary: Login and obtain JWT Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, example: "customer@ecommerce.com" }
+                password: { type: string, example: "CustomerPass123!" }
+      responses:
+        '200': { description: "Login successful with token" }
+        '401': { description: "Invalid credentials" }
+  /api/products:
+    get:
+      summary: Public list & filter products
+      parameters:
+        - { in: query, name: category, schema: { type: string } }
+        - { in: query, name: search, schema: { type: string } }
+        - { in: query, name: minPrice, schema: { type: number } }
+        - { in: query, name: maxPrice, schema: { type: number } }
+        - { in: query, name: inStock, schema: { type: boolean } }
+      responses:
+        '200': { description: "Products list" }
+    post:
+      summary: Admin create product
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, price, stock]
+              properties:
+                name: { type: string, example: "Gaming Laptop" }
+                sku: { type: string, example: "LAP-GAME-001" }
+                category: { type: string, example: "ELECTRONICS" }
+                price: { type: number, example: 1299.99 }
+                stock: { type: integer, example: 15 }
+                description: { type: string, example: "High performance gaming laptop." }
+      responses:
+        '201': { description: "Product created" }
+        '403': { description: "Admin access required" }
+  /api/cart:
+    get:
+      summary: Get user cart
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: "Current cart" }
+  /api/cart/items:
+    post:
+      summary: Add product item to cart
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId, quantity]
+              properties:
+                productId: { type: integer, example: 1 }
+                quantity: { type: integer, example: 2 }
+      responses:
+        '200': { description: "Item added to cart" }
+        '400': { description: "Stock insufficient or invalid qty" }
+  /api/orders/checkout:
+    post:
+      summary: Checkout user cart and place order
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shippingAddress: { type: string, example: "123 Tech Park, Suite 400, New York, NY" }
+      responses:
+        '201': { description: "Order created and stock reduced" }
+        '400': { description: "Empty cart or stock error" }

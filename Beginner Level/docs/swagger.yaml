@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Support Ticket & Customer Inquiry Management API
+  description: Beginner Level REST API for handling support tickets, validations, status workflows, and querying.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3001
+    description: Local Development Server
+paths:
+  /health:
+    get:
+      summary: Health Check Endpoint
+      responses:
+        '200':
+          description: API is operational
+  /api/tickets:
+    post:
+      summary: Submit a new support ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customer_name
+                - customer_email
+                - category
+                - subject
+                - description
+              properties:
+                customer_name:
+                  type: string
+                  example: John Doe
+                customer_email:
+                  type: string
+                  example: john.doe@example.com
+                category:
+                  type: string
+                  enum: [BILLING, TECHNICAL, GENERAL, ACCOUNT, FEATURE_REQUEST]
+                  example: TECHNICAL
+                priority:
+                  type: string
+                  enum: [LOW, MEDIUM, HIGH, URGENT]
+                  example: HIGH
+                subject:
+                  type: string
+                  example: Unable to reset my password
+                description:
+                  type: string
+                  example: I requested a password reset link but did not receive any email in my inbox or spam folder.
+      responses:
+        '201':
+          description: Ticket created successfully
+        '400':
+          description: Validation error
+    get:
+      summary: Get all tickets with pagination and filtering
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [OPEN, IN_PROGRESS, RESOLVED, CLOSED]
+        - in: query
+          name: priority
+          schema:
+            type: string
+            enum: [LOW, MEDIUM, HIGH, URGENT]
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [BILLING, TECHNICAL, GENERAL, ACCOUNT, FEATURE_REQUEST]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of tickets retrieved successfully
+  /api/tickets/{id}:
+    get:
+      summary: Get ticket by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ticket details
+        '404':
+          description: Ticket not found
+    delete:
+      summary: Delete ticket by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ticket deleted
+        '404':
+          description: Ticket not found
+  /api/tickets/{id}/status:
+    patch:
+      summary: Update ticket status and resolution notes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [OPEN, IN_PROGRESS, RESOLVED, CLOSED]
+                  example: RESOLVED
+                resolution_notes:
+                  type: string
+                  example: Reset email link manually dispatched and verified with user.
+      responses:
+        '200':
+          description: Status updated
+        '400':
+          description: Validation error
+        '422':
+          description: Invalid state transition

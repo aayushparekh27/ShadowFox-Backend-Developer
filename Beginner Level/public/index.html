@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TicketDesk - Customer Support Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --sidebar-bg: #0d1322;
+      --card-bg: #131b2e;
+      --card-border: #1e293b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; }
+
+    /* App Shell Layout */
+    .sidebar {
+      width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--card-border);
+      padding: 1.5rem 1rem; display: flex; flex-direction: column; justify-content: space-between;
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.75rem; padding: 0 0.5rem 1.5rem 0.5rem; border-bottom: 1px solid var(--card-border); }
+    .brand-logo { width: 34px; height: 34px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+    .brand-title { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; }
+
+    .nav-list { list-style: none; margin-top: 1.5rem; }
+    .nav-item { margin-bottom: 0.35rem; }
+    .nav-link {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.85rem;
+      color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+      border-radius: 8px; transition: all 0.15s;
+    }
+    .nav-link:hover, .nav-link.active { background: rgba(37, 99, 235, 0.12); color: #fff; }
+    .nav-link.active { font-weight: 600; color: #60a5fa; }
+
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* Header */
+    header {
+      height: 64px; border-bottom: 1px solid var(--card-border); padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center; background: rgba(13, 19, 34, 0.5);
+    }
+
+    .search-input {
+      background: #0d1322; border: 1px solid var(--card-border); border-radius: 8px;
+      padding: 0.5rem 0.9rem; color: var(--text-main); font-size: 0.85rem; width: 280px; outline: none;
+    }
+
+    .user-profile { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+
+    /* Main Content */
+    .content-area { padding: 2rem; overflow-y: auto; }
+
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .page-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+
+    .btn {
+      padding: 0.55rem 1.1rem; border-radius: 8px; border: none; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #1e293b; color: var(--text-main); border: 1px solid #334155; }
+    .btn-secondary:hover { background: #334155; }
+
+    /* Stats Row */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .stat-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.25rem; }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+    .stat-val { font-size: 1.6rem; font-weight: 700; margin: 0.3rem 0; letter-spacing: -0.5px; }
+    .stat-trend { font-size: 0.75rem; font-weight: 500; color: var(--success); }
+
+    /* Data Table */
+    .table-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
+    th { background: #0d1322; padding: 0.85rem 1.25rem; font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
+    td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--card-border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    .ticket-code { font-family: monospace; font-size: 0.8rem; font-weight: 600; color: #60a5fa; }
+    .badge { padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.725rem; font-weight: 600; display: inline-block; }
+
+    .status-OPEN { background: rgba(37, 99, 235, 0.15); color: #60a5fa; }
+    .status-IN_PROGRESS { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .status-RESOLVED { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-CLOSED { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+
+    .prio-URGENT, .prio-HIGH { color: #f87171; }
+    .prio-MEDIUM { color: #fbbf24; }
+    .prio-LOW { color: #94a3b8; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; width: 520px; max-width: 90%; padding: 1.75rem; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+    .modal-title { font-size: 1.1rem; font-weight: 700; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: #0d1322; border: 1px solid var(--card-border); border-radius: 8px;
+      padding: 0.65rem 0.85rem; color: var(--text-main); font-size: 0.875rem; outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-logo">T</div>
+        <div>
+          <div class="brand-title">TicketDesk</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Support Management</div>
+        </div>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#" class="nav-link active"><span>🎫</span> Tickets Queue</a></li>
+        <li class="nav-item"><a href="/api-docs" target="_blank" class="nav-link"><span>📄</span> OpenAPI Docs</a></li>
+        <li class="nav-item"><a href="/health" target="_blank" class="nav-link"><span>💚</span> System Health</a></li>
+      </ul>
+    </div>
+
+    <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--card-border); padding-top: 1rem;">
+      Beginner Level REST API<br>v1.0.0 Stable
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+    <header>
+      <input type="text" class="search-input" id="searchBox" placeholder="Search by ticket code or email..." onkeyup="filterTable()">
+      <div class="user-profile">
+        <div class="avatar">AM</div>
+        <div>
+          <div style="font-weight: 600;">Alex Morgan</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Support Lead</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Support Tickets</h1>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Manage customer inquiries and resolution workflows.</div>
+        </div>
+        <button class="btn btn-primary" onclick="openNewTicketModal()">+ New Ticket</button>
+      </div>
+
+      <!-- Stats Summary -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-label">Total Tickets</div>
+          <div class="stat-val" id="stTotal">0</div>
+          <div class="stat-trend">Registered tickets</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Active / Open</div>
+          <div class="stat-val" id="stOpen">0</div>
+          <div class="stat-trend" style="color: var(--warning);">Needs attention</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Resolved</div>
+          <div class="stat-val" id="stResolved">0</div>
+          <div class="stat-trend">Closed successfully</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">High Priority</div>
+          <div class="stat-val" id="stUrgent">0</div>
+          <div class="stat-trend" style="color: var(--danger);">Urgent SLAs</div>
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket Code</th>
+              <th>Customer</th>
+              <th>Category</th>
+              <th>Subject</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ticketTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading ticket records...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create Ticket Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Submit Support Ticket</h3>
+        <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem;" onclick="closeModal('createModal')">✕</button>
+      </div>
+      <form id="newTicketForm">
+        <div class="form-group">
+          <label>Customer Name</label>
+          <input type="text" id="custName" required placeholder="Jane Smith">
+        </div>
+        <div class="form-group">
+          <label>Customer Email</label>
+          <input type="email" id="custEmail" required placeholder="jane@company.com">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="custCat">
+              <option value="TECHNICAL">TECHNICAL</option>
+              <option value="BILLING">BILLING</option>
+              <option value="GENERAL">GENERAL</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="custPrio">
+              <option value="HIGH">HIGH</option>
+              <option value="MEDIUM" selected>MEDIUM</option>
+              <option value="LOW">LOW</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <input type="text" id="custSubject" required placeholder="Issue title">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="custDesc" rows="3" required placeholder="Provide context..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('createModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Ticket</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let ticketsCache = [];
+
+    async function fetchTickets() {
+      try {
+        const res = await fetch('/api/tickets');
+        const json = await res.json();
+        if (json.success) {
+          ticketsCache = json.data;
+          renderTable(ticketsCache);
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById('ticketTableBody');
+      document.getElementById('stTotal').innerText = list.length;
+      document.getElementById('stOpen').innerText = list.filter(t => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length;
+      document.getElementById('stResolved').innerText = list.filter(t => t.status === 'RESOLVED' || t.status === 'CLOSED').length;
+      document.getElementById('stUrgent').innerText = list.filter(t => t.priority === 'URGENT' || t.priority === 'HIGH').length;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No tickets recorded.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(t => `
+        <tr>
+          <td><span class="ticket-code">${t.ticket_code}</span></td>
+          <td>
+            <div style="font-weight: 600;">${escapeHtml(t.customer_name)}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(t.customer_email)}</div>
+          </td>
+          <td><span style="font-size: 0.75rem; background: #1e293b; padding: 0.2rem 0.5rem; border-radius: 4px;">${t.category}</span></td>
+          <td><div style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t.subject)}</div></td>
+          <td><span class="prio-${t.priority}" style="font-weight: 600; font-size: 0.8rem;">${t.priority}</span></td>
+          <td><span class="badge status-${t.status}">${t.status}</span></td>
+          <td>
+            <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="updateStatus(${t.id}, '${t.status}')">Update Status</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterTable() {
+      const q = document.getElementById('searchBox').value.toLowerCase();
+      const filtered = ticketsCache.filter(t => 
+        t.ticket_code.toLowerCase().includes(q) || 
+        t.customer_name.toLowerCase().includes(q) ||
+        t.customer_email.toLowerCase().includes(q) ||
+        t.subject.toLowerCase().includes(q)
+      );
+      renderTable(filtered);
+    }
+
+    function openNewTicketModal() { document.getElementById('createModal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    document.getElementById('newTicketForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        customer_name: document.getElementById('custName').value,
+        customer_email: document.getElementById('custEmail').value,
+        category: document.getElementById('custCat').value,
+        priority: document.getElementById('custPrio').value,
+        subject: document.getElementById('custSubject').value,
+        description: document.getElementById('custDesc').value
+      };
+
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (json.success) {
+        closeModal('createModal');
+        document.getElementById('newTicketForm').reset();
+        fetchTickets();
+      } else { alert(json.message); }
+    });
+
+    async function updateStatus(id, currentStatus) {
+      const nextStatus = prompt(`Update Status for Ticket #${id}:`, currentStatus === 'OPEN' ? 'IN_PROGRESS' : 'RESOLVED');
+      if (!nextStatus) return;
+
+      let resolutionNotes = '';
+      if (nextStatus.toUpperCase() === 'RESOLVED' || nextStatus.toUpperCase() === 'CLOSED') {
+        resolutionNotes = prompt('Enter Resolution Notes:', 'Issue verified and resolved.');
+        if (!resolutionNotes) return alert('Resolution notes are required.');
+      }
+
+      const res = await fetch(`/api/tickets/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus, resolution_notes: resolutionNotes })
+      });
+      const json = await res.json();
+      if (json.success) { fetchTickets(); } else { alert(json.message); }
+    }
+
+    function escapeHtml(str) {
+      return str ? str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : '';
+    }
+
+    fetchTickets();
+  </script>
+</body>
+</html>

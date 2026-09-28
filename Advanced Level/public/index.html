@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClientPulse - Client & Milestone Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --sidebar-bg: #0d1322;
+      --card-bg: #131b2e;
+      --card-border: #1e293b;
+      --primary: #059669;
+      --primary-hover: #047857;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--card-border);
+      padding: 1.5rem 1rem; display: flex; flex-direction: column; justify-content: space-between;
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.75rem; padding: 0 0.5rem 1.5rem 0.5rem; border-bottom: 1px solid var(--card-border); }
+    .brand-logo { width: 34px; height: 34px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+    .brand-title { font-size: 1.1rem; font-weight: 700; }
+
+    .nav-list { list-style: none; margin-top: 1.5rem; }
+    .nav-item { margin-bottom: 0.35rem; }
+    .nav-link {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.85rem;
+      color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+      border-radius: 8px; transition: all 0.15s; cursor: pointer;
+    }
+    .nav-link:hover, .nav-link.active { background: rgba(5, 150, 105, 0.12); color: #fff; }
+    .nav-link.active { font-weight: 600; color: #34d399; }
+
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* Header */
+    header {
+      height: 64px; border-bottom: 1px solid var(--card-border); padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center; background: rgba(13, 19, 34, 0.5);
+    }
+
+    .role-bar { display: flex; background: #0d1322; border: 1px solid var(--card-border); border-radius: 8px; padding: 0.2rem; gap: 0.2rem; }
+    .role-btn { padding: 0.4rem 0.85rem; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
+    .role-btn.active { background: var(--primary); color: #fff; }
+
+    .content-area { padding: 2rem; overflow-y: auto; }
+
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .page-title { font-size: 1.4rem; font-weight: 700; }
+
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+
+    .progress-bar-bg { background: #0d1322; height: 10px; border-radius: 5px; overflow: hidden; margin: 0.8rem 0; border: 1px solid var(--card-border); }
+    .progress-bar-val { background: var(--primary); height: 100%; border-radius: 5px; transition: width 0.3s; }
+
+    .milestone-item { background: #0d1322; border: 1px solid var(--card-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.85rem; }
+
+    .btn {
+      padding: 0.45rem 0.9rem; border-radius: 6px; border: none; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #1e293b; color: var(--text-main); border: 1px solid #334155; }
+    .btn-secondary:hover { background: #334155; }
+
+    .badge { padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.725rem; font-weight: 600; }
+    .status-COMPLETED { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-UNDER_REVIEW { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .status-IN_PROGRESS { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .status-PLANNED { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-logo">C</div>
+        <div>
+          <div class="brand-title">ClientPulse</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Enterprise Portal</div>
+        </div>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#" class="nav-link active">📁 Project Contracts</a></li>
+        <li class="nav-item"><a href="/api-docs" target="_blank" class="nav-link">📄 OpenAPI Specs</a></li>
+      </ul>
+    </div>
+
+    <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--card-border); padding-top: 1rem;">
+      Advanced Level REST API<br>Multi-Role & Audit Logging
+    </div>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <header>
+      <div class="role-bar">
+        <button class="role-btn active" id="rAdmin" onclick="setRole('AGENCY_ADMIN')">Agency Admin</button>
+        <button class="role-btn" id="rFreelance" onclick="setRole('FREELANCER')">Freelancer</button>
+        <button class="role-btn" id="rClient" onclick="setRole('CLIENT')">Client User</button>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-title">
+              <span>Project Details</span>
+              <span style="font-size: 0.8rem; background: #0d1322; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--card-border);" id="pBudget">$45,000 Budget</span>
+            </div>
+            <h2 id="pTitle" style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem;">Loading Project...</h2>
+            <p id="pDesc" style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.45;">...</p>
+
+            <div style="margin-top: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600;">
+                <span>Milestone Progress</span>
+                <span id="pPercent">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-val" id="pBar" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span>Project Milestones</span>
+            </div>
+            <div id="milestoneContainer">
+              <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading milestones...</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">Milestone Invoices</div>
+            <div id="invoiceContainer">
+              <div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No invoices generated.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">System Audit Logs</div>
+            <div id="auditContainer" style="max-height: 280px; overflow-y: auto;">
+              <div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading audit logs...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let activeRole = 'AGENCY_ADMIN';
+    let jwtToken = '';
+
+    async function authRole(role) {
+      let email = 'admin@agency.com';
+      let password = 'AdminPass123!';
+
+      if (role === 'FREELANCER') { email = 'freelancer@agency.com'; password = 'FreelancerPass123!'; }
+      if (role === 'CLIENT') { email = 'client@acme.com'; password = 'ClientPass123!'; }
+
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const json = await res.json();
+      if (json.success) { jwtToken = json.data.token; }
+    }
+
+    async function setRole(role) {
+      activeRole = role;
+      document.getElementById('rAdmin').classList.toggle('active', role === 'AGENCY_ADMIN');
+      document.getElementById('rFreelance').classList.toggle('active', role === 'FREELANCER');
+      document.getElementById('rClient').classList.toggle('active', role === 'CLIENT');
+
+      await authRole(role);
+      refreshView();
+    }
+
+    async function refreshView() {
+      await fetchProject();
+      await fetchInvoices();
+      await fetchLogs();
+    }
+
+    async function fetchProject() {
+      try {
+        const res = await fetch('/api/projects/1', { headers: { 'Authorization': `Bearer ${jwtToken}` } });
+        const json = await res.json();
+        if (!json.success) return;
+
+        const p = json.data;
+        document.getElementById('pTitle').innerText = p.title;
+        document.getElementById('pDesc').innerText = p.description;
+        document.getElementById('pBudget').innerText = `$${p.total_budget.toLocaleString()} Budget`;
+        document.getElementById('pPercent').innerText = `${p.progress_percentage}% (${p.completed_milestones}/${p.total_milestones} completed)`;
+        document.getElementById('pBar').style.width = `${p.progress_percentage}%`;
+
+        const container = document.getElementById('milestoneContainer');
+        if (!p.milestones || p.milestones.length === 0) {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted);">No milestones found.</div>`;
+          return;
+        }
+
+        container.innerHTML = p.milestones.map(m => `
+          <div class="milestone-item">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <span style="font-weight: 600; font-size: 0.95rem;">${escapeHtml(m.title)}</span>
+              <span class="badge status-${m.status}">${m.status}</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Due Date: ${m.due_date} | Amount: $${m.amount.toLocaleString()}
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              ${(activeRole === 'FREELANCER' || activeRole === 'AGENCY_ADMIN') && m.status !== 'COMPLETED' ? `
+                <button class="btn btn-secondary" onclick="promptSubmitDeliverable(${m.id})">Submit Deliverable</button>
+              ` : ''}
+              ${(activeRole === 'CLIENT' || activeRole === 'AGENCY_ADMIN') && m.status === 'UNDER_REVIEW' ? `
+                <button class="btn btn-primary" onclick="promptReviewDeliverable(${m.id})">Review Deliverable</button>
+              ` : ''}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) { console.error(err); }
+    }
+
+    async function fetchInvoices() {
+      try {
+        const res = await fetch('/api/invoices', { headers: { 'Authorization': `Bearer ${jwtToken}` } });
+        const json = await res.json();
+        const container = document.getElementById('invoiceContainer');
+
+        if (!json.success || !json.data || json.data.length === 0) {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No invoices generated.</div>`;
+          return;
+        }
+
+        container.innerHTML = json.data.map(i => `
+          <div style="background: #0d1322; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.6rem; border: 1px solid var(--card-border); font-size: 0.85rem;">
+            <div style="display: flex; justify-content: space-between; font-weight: 600;">
+              <span>${i.invoice_code}</span>
+              <span style="color: ${i.status === 'PAID' ? 'var(--success)' : 'var(--warning)'}">${i.status}</span>
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">Amount: $${i.amount.toLocaleString()} | Due: ${i.due_date}</div>
+            ${i.status === 'UNPAID' && activeRole === 'AGENCY_ADMIN' ? `
+              <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin-top: 0.4rem;" onclick="markInvoicePaid(${i.id})">Mark Paid</button>
+            ` : ''}
+          </div>
+        `).join('');
+      } catch (e){}
+    }
+
+    async function fetchLogs() {
+      if (activeRole !== 'AGENCY_ADMIN') {
+        document.getElementById('auditContainer').innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Audit log access restricted to Agency Admin.</div>`;
+        return;
+      }
+      try {
+        const res = await fetch('/api/audit-logs', { headers: { 'Authorization': `Bearer ${jwtToken}` } });
+        const json = await res.json();
+        const container = document.getElementById('auditContainer');
+
+        if (!json.success || !json.data || json.data.length === 0) {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No audit logs.</div>`;
+          return;
+        }
+
+        container.innerHTML = json.data.map(l => `
+          <div style="font-size: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid #1e293b;">
+            <div style="font-weight: 600;">${l.action} (${l.entity_type} #${l.entity_id})</div>
+            <div style="color: var(--text-muted); font-size: 0.75rem;">${new Date(l.timestamp).toLocaleTimeString()}</div>
+          </div>
+        `).join('');
+      } catch (e){}
+    }
+
+    async function promptSubmitDeliverable(milestoneId) {
+      const title = prompt('Deliverable Title:'); if (!title) return;
+      const deliverableUrl = prompt('Deliverable Link / URL:', 'https://github.com/organization/repo/pull/1'); if (!deliverableUrl) return;
+
+      const res = await fetch(`/api/milestones/${milestoneId}/deliverables`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwtToken}` },
+        body: JSON.stringify({ title, deliverableUrl, notes: 'Submitted for client review.' })
+      });
+      const json = await res.json();
+      if (json.success) { refreshView(); } else { alert(json.message); }
+    }
+
+    async function promptReviewDeliverable(milestoneId) {
+      const delRes = await fetch(`/api/milestones/${milestoneId}/deliverables`, { headers: { 'Authorization': `Bearer ${jwtToken}` } });
+      const delJson = await delRes.json();
+      if (!delJson.success || delJson.data.length === 0) return alert('No deliverable submitted yet.');
+
+      const deliverableId = delJson.data[0].id;
+      const decision = confirm('Approve deliverable?\nOK = Approve & Generate Invoice\nCancel = Request Revisions') ? 'APPROVED' : 'REVISION_REQUESTED';
+      const feedbackNotes = prompt('Feedback Notes:', decision === 'APPROVED' ? 'Code review approved.' : 'Please fix reported issues.');
+
+      const res = await fetch(`/api/deliverables/${deliverableId}/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwtToken}` },
+        body: JSON.stringify({ decision, feedbackNotes })
+      });
+      const json = await res.json();
+      if (json.success) { refreshView(); } else { alert(json.message); }
+    }
+
+    async function markInvoicePaid(id) {
+      const res = await fetch(`/api/invoices/${id}/pay`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${jwtToken}` } });
+      const json = await res.json();
+      if (json.success) { refreshView(); }
+    }
+
+    function escapeHtml(str) {
+      return str ? str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : '';
+    }
+
+    setRole('AGENCY_ADMIN');
+  </script>
+</body>
+</html>

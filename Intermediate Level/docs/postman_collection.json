@@ -1,0 +1,111 @@
+{
+  "info": {
+    "name": "Intermediate Level - E-Commerce & Inventory API",
+    "description": "Postman Collection for E-Commerce API with JWT Auth & Stock Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Customer Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"customer@ecommerce.com\",\n  \"password\": \"CustomerPass123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+      }
+    },
+    {
+      "name": "2. Admin Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@ecommerce.com\",\n  \"password\": \"AdminPass123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+      }
+    },
+    {
+      "name": "3. Get All Products (Public)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
+      }
+    },
+    {
+      "name": "4. Admin Create Product",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"4K Ultra HD Monitor\",\n  \"sku\": \"DISP-4K-009\",\n  \"category\": \"ELECTRONICS\",\n  \"price\": 349.99,\n  \"stock\": 15,\n  \"description\": \"27-inch IPS 4K HDR Monitor with USB-C hub.\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
+      }
+    },
+    {
+      "name": "5. Add Item to Cart",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": 1,\n  \"quantity\": 2\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/cart/items", "host": ["{{baseUrl}}"], "path": ["api", "cart", "items"] }
+      }
+    },
+    {
+      "name": "6. View Cart",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api", "cart"] }
+      }
+    },
+    {
+      "name": "7. Checkout & Place Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shippingAddress\": \"742 Evergreen Terrace, Springfield, OR\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/orders/checkout", "host": ["{{baseUrl}}"], "path": ["api", "orders", "checkout"] }
+      }
+    },
+    {
+      "name": "8. View Order History",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3002" },
+    { "key": "customerToken", "value": "YOUR_CUSTOMER_JWT_TOKEN" },
+    { "key": "adminToken", "value": "YOUR_ADMIN_JWT_TOKEN" }
+  ]
+}

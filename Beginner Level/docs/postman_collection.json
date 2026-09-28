@@ -1,0 +1,104 @@
+{
+  "info": {
+    "name": "Beginner Level - Support Ticket API Collection",
+    "description": "Postman collection for testing Support Ticket Management REST API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Create Support Ticket",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customer_name\": \"Alice Smith\",\n  \"customer_email\": \"alice@example.com\",\n  \"category\": \"TECHNICAL\",\n  \"priority\": \"HIGH\",\n  \"subject\": \"Database Connection Error\",\n  \"description\": \"Encountering ECONNREFUSED error when attempting to access dashboard.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets"]
+        }
+      }
+    },
+    {
+      "name": "Get All Tickets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets?status=OPEN&page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets"],
+          "query": [
+            { "key": "status", "value": "OPEN" },
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Ticket By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "1"]
+        }
+      }
+    },
+    {
+      "name": "Update Ticket Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"RESOLVED\",\n  \"resolution_notes\": \"Restarted backend service and restored connection pooling.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/1/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "1", "status"]
+        }
+      }
+    },
+    {
+      "name": "Delete Ticket",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "1"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    }
+  ]
+}

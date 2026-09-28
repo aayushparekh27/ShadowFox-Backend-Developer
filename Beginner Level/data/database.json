@@ -1,0 +1,21 @@
+{
+  "tickets": [
+    {
+      "id": 1,
+      "ticket_code": "TCK-117510-CC721A",
+      "customer_name": "Aayush",
+      "customer_email": "aayushparekh06@gmail.com",
+      "category": "GENERAL",
+      "priority": "LOW",
+      "subject": "Testtttttttttttttttttttttttt",
+      "description": "Testtttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
+      "status": "OPEN",
+      "resolution_notes": null,
+      "created_at": "2026-09-03T14:18:37.508Z",
+      "updated_at": "2026-09-03T14:18:37.508Z"
+    }
+  ],
+  "autoIncrement": {
+    "tickets": 2
+  }
+}

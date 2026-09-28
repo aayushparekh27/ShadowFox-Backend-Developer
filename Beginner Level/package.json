@@ -1,0 +1,26 @@
+{
+  "name": "beginner-support-ticket-api",
+  "version": "1.0.0",
+  "description": "Beginner Level: Support Ticket & Customer Inquiry Management REST API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --runInBand --detectOpenHandles"
+  },
+  "keywords": ["express", "rest-api", "support-tickets"],
+  "author": "Backend Developer Candidate",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "System Admin",
+      "email": "admin@ecommerce.com",
+      "password": "$2a$10$BVbWSgHztN/LXqe59ZjAc.S1BqMnppo2S/WNWDYswCfZx1zkwKYHO",
+      "role": "ADMIN",
+      "created_at": "2026-09-03T14:13:02.238Z"
+    },
+    {
+      "id": 2,
+      "name": "Demo Customer",
+      "email": "customer@ecommerce.com",
+      "password": "$2a$10$BVbWSgHztN/LXqe59ZjAc.pZBIVyCyEXaBF9xBh/i6SH5KN7JicWa",
+      "role": "CUSTOMER",
+      "created_at": "2026-09-03T14:13:02.239Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Wireless Noise-Canceling Headphones",
+      "sku": "TECH-AUD-001",
+      "category": "ELECTRONICS",
+      "price": 199.99,
+      "stock": 49,
+      "description": "High-fidelity audio with active noise cancellation.",
+      "created_at": "2026-09-03T14:13:02.239Z",
+      "updated_at": "2026-09-03T14:30:39.257Z"
+    },
+    {
+      "id": 2,
+      "name": "Mechanical Gaming Keyboard",
+      "sku": "TECH-ACC-002",
+      "category": "ELECTRONICS",
+      "price": 89.5,
+      "stock": 25,
+      "description": "RGB backlit mechanical keyboard with tactile switches.",
+      "created_at": "2026-09-03T14:13:02.239Z",
+      "updated_at": "2026-09-03T14:13:02.239Z"
+    },
+    {
+      "id": 3,
+      "name": "Ergonomic Desk Chair",
+      "sku": "FURN-OFF-003",
+      "category": "FURNITURE",
+      "price": 249,
+      "stock": 10,
+      "description": "Adjustable lumbar support and breathable mesh.",
+      "created_at": "2026-09-03T14:13:02.239Z",
+      "updated_at": "2026-09-03T14:13:02.239Z"
+    }
+  ],
+  "carts": [
+    {
+      "id": 1,
+      "user_id": 2,
+      "items": [
+        {
+          "product_id": 1,
+          "quantity": 1
+        }
+      ],
+      "updated_at": "2026-09-03T14:30:59.330Z"
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "items": [],
+      "updated_at": "2026-09-03T14:29:45.474Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "order_code": "ORD-782700-40BF8B",
+      "user_id": 2,
+      "status": "PENDING",
+      "items": [
+        {
+          "product_id": 1,
+          "product_name": "Wireless Noise-Canceling Headphones",
+          "sku": "TECH-AUD-001",
+          "unit_price": 199.99,
+          "quantity": 1,
+          "subtotal": 199.99
+        }
+      ],
+      "total_amount": 199.99,
+      "shipping_address": "100 Broadway, Suite 400, NY",
+      "created_at": "2026-09-03T14:29:42.700Z",
+      "updated_at": "2026-09-03T14:29:42.700Z"
+    }
+  ],
+  "autoIncrement": {
+    "users": 3,
+    "products": 4,
+    "carts": 3,
+    "orders": 2
+  }
+}
